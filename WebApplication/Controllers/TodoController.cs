@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication.Data;
@@ -25,12 +23,14 @@ namespace WebApplication.Controllers
             if (!_dbContext.TodoItems.Any())
             {
                 _dbContext.TodoItems.Add(new TodoItem { Name = "Item1" });
+                _dbContext.TodoItems.Add(new TodoItem { Name = "Item2" });
+                _dbContext.TodoItems.Add(new TodoItem { Name = "Item3" });
                 _dbContext.SaveChanges();
             }
         }
         #endregion
 
-        #region Apis
+        #region APIs
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoList()
         {
@@ -44,6 +44,15 @@ namespace WebApplication.Controllers
             if (todoItem == null)
                 return NotFound();
             return todoItem;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<TodoItem>> AddTodoItem(TodoItem item)
+        {
+            _dbContext.TodoItems.Add(item);
+            await _dbContext.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetTodoById), new { id = item.Id }, item);
         }
         #endregion
     }
