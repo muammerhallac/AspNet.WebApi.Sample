@@ -54,6 +54,34 @@ namespace WebApplication.Controllers
 
             return CreatedAtAction(nameof(GetTodoById), new { id = item.Id }, item);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutTodoItem(int id, TodoItem item)
+        {
+            if (id != item.Id)
+            {
+                return BadRequest();
+            }
+
+            _dbContext.Entry(item).State = EntityState.Modified;
+            await _dbContext.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTodoItem(long id, TodoItem item)
+        {
+            if (id != item.Id)
+            {
+                return BadRequest();
+            }
+
+            _dbContext.TodoItems.Remove(item);
+            await _dbContext.SaveChangesAsync();
+
+            return NoContent();
+        }
         #endregion
     }
 }
